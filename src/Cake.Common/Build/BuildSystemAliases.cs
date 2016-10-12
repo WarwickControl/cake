@@ -8,6 +8,7 @@ using Cake.Common.Build.Bamboo;
 using Cake.Common.Build.BitbucketPipelines;
 using Cake.Common.Build.Bitrise;
 using Cake.Common.Build.ContinuaCI;
+using Cake.Common.Build.GitLabCI;
 using Cake.Common.Build.Jenkins;
 using Cake.Common.Build.MyGet;
 using Cake.Common.Build.TeamCity;
@@ -50,8 +51,9 @@ namespace Cake.Common.Build
             var bitriseProvider = new BitriseProvider(context.Environment);
             var travisCIProvider = new TravisCIProvider(context.Environment, context.Log);
             var bitbucketPipelinesProvider = new BitbucketPipelinesProvider(context.Environment);
+            var gitlabCIProvider = new GitLabCIProvider(context.Environment);
 
-            return new BuildSystem(appVeyorProvider, teamCityProvider, myGetProvider, bambooProvider, continuaCIProvider, jenkinsProvider, bitriseProvider, travisCIProvider, bitbucketPipelinesProvider);
+            return new BuildSystem(appVeyorProvider, teamCityProvider, myGetProvider, bambooProvider, continuaCIProvider, jenkinsProvider, bitriseProvider, travisCIProvider, bitbucketPipelinesProvider, gitlabCIProvider);
         }
 
         /// <summary>
@@ -271,6 +273,31 @@ namespace Cake.Common.Build
 
             var buildSystem = context.BuildSystem();
             return buildSystem.BitbucketPipelines;
+        }
+
+        /// <summary>
+        /// Gets a <see cref="GitLabCIProvider"/> instance that can be user to
+        /// obtain information from the GitLab CI environment.
+        /// </summary>
+        /// <example>
+        /// <code>
+        /// var isGitLabCIBuild = GitLabCI.IsRunningOnGitLabCI;
+        /// </code>
+        /// </example>
+        /// <param name="context">The context.</param>
+        /// <returns>A <see cref="Build.GitLabCI"/> instance.</returns>
+        [CakePropertyAlias(Cache = true)]
+        [CakeNamespaceImport("Cake.Common.Build.GitLabCI")]
+        [CakeNamespaceImport("Cake.Common.Build.GitLabCI.Data")]
+        public static IGitLabCIProvider GitLabCI(this ICakeContext context)
+        {
+            if (context == null)
+            {
+                throw new ArgumentNullException(nameof(context));
+            }
+
+            var buildSystem = context.BuildSystem();
+            return buildSystem.GitLabCI;
         }
     }
 }
